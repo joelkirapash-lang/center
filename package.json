@@ -2,9 +2,6 @@
   "name": "center",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest --passWithNoTests"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
+    "test": "jest"
   }
 }
