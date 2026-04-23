@@ -1,7 +1,11 @@
 const weatherApi = "https://api.weather.gov/alerts/active?area=";
 
+// DOM elements
 let input, button, alertsDisplay, errorDiv;
 
+// -------------------------
+// INIT (browser only)
+// -------------------------
 function init() {
   input = document.getElementById("state-input");
   button = document.getElementById("fetch-alerts");
@@ -13,50 +17,54 @@ function init() {
   }
 }
 
-init();
+// Only run init in browser (NOT in Jest)
+if (typeof window !== "undefined") {
+  init();
+}
 
+// -------------------------
+// CLICK HANDLER
+// -------------------------
 function handleClick() {
   const state = input.value.trim().toUpperCase();
   fetchWeatherAlerts(state);
 }
 
+// -------------------------
+// FETCH FUNCTION
+// -------------------------
 function fetchWeatherAlerts(state) {
   return fetch(`${weatherApi}${state}`)
     .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch weather alerts");
+      if (!res.ok) {
+        throw new Error("Network failure");
+      }
       return res.json();
     })
     .then(data => {
-      clearError();
       displayAlerts(data);
-      input.value = "";
+      clearError();
+
+      // clear input
+      if (input) input.value = "";
     })
     .catch(err => {
       displayError(err.message);
     });
 }
 
+// -------------------------
+// DISPLAY ALERTS
+// -------------------------
 function displayAlerts(data) {
+  if (!alertsDisplay) return;
+
   alertsDisplay.innerHTML = "";
 
   const alerts = data.features || [];
 
-  // IMPORTANT: CodeGrade expects THIS format
-  const stateNameMap = {
-    NY: "New York",
-    CA: "California",
-    TX: "Texas",
-    FL: "Florida",
-    WA: "Washington"
-  };
-
-  const stateInput = input.value.toUpperCase();
-  const stateName = stateNameMap[stateInput] || stateInput;
-
   const title = document.createElement("h2");
-  title.textContent =
-    `Current watches, warnings, and advisories for ${stateName}: ${alerts.length}`;
-
+  title.textContent = `Weather Alerts: ${alerts.length}`;
   alertsDisplay.appendChild(title);
 
   alerts.forEach(alert => {
@@ -66,16 +74,26 @@ function displayAlerts(data) {
   });
 }
 
+// -------------------------
+// ERROR HANDLING
+// -------------------------
 function displayError(message) {
+  if (!errorDiv) return;
+
   errorDiv.textContent = message;
   errorDiv.classList.remove("hidden");
 }
 
 function clearError() {
+  if (!errorDiv) return;
+
   errorDiv.textContent = "";
   errorDiv.classList.add("hidden");
 }
 
+// -------------------------
+// EXPORTS (for Jest tests)
+// -------------------------
 if (typeof module !== "undefined") {
   module.exports = {
     fetchWeatherAlerts,
