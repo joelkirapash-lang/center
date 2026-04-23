@@ -1,12 +1,10 @@
 {
-  "name": "course-3-module-4-external-apis-and-fetching-lab",
+  "name": "center",
   "version": "1.0.0",
-  "description": "Weather Alerts Lab",
-  "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests"
   },
   "devDependencies": {
-    "jest": "^29.0.0"
+    "jest": "^29.7.0"
   }
 }
