@@ -1,5 +1,59 @@
 const weatherApi = "https://api.weather.gov/alerts/active?area=";
 
+// State abbreviation → full name
+const stateNames = {
+  NY: "New York",
+  CA: "California",
+  TX: "Texas",
+  FL: "Florida",
+  WA: "Washington",
+  IL: "Illinois",
+  PA: "Pennsylvania",
+  OH: "Ohio",
+  GA: "Georgia",
+  NC: "North Carolina",
+  MI: "Michigan",
+  NJ: "New Jersey",
+  VA: "Virginia",
+  AZ: "Arizona",
+  MA: "Massachusetts",
+  TN: "Tennessee",
+  IN: "Indiana",
+  MO: "Missouri",
+  MD: "Maryland",
+  WI: "Wisconsin",
+  CO: "Colorado",
+  MN: "Minnesota",
+  SC: "South Carolina",
+  AL: "Alabama",
+  LA: "Louisiana",
+  KY: "Kentucky",
+  OR: "Oregon",
+  OK: "Oklahoma",
+  CT: "Connecticut",
+  UT: "Utah",
+  IA: "Iowa",
+  NV: "Nevada",
+  AR: "Arkansas",
+  MS: "Mississippi",
+  KS: "Kansas",
+  NM: "New Mexico",
+  NE: "Nebraska",
+  WV: "West Virginia",
+  ID: "Idaho",
+  HI: "Hawaii",
+  NH: "New Hampshire",
+  ME: "Maine",
+  MT: "Montana",
+  RI: "Rhode Island",
+  DE: "Delaware",
+  SD: "South Dakota",
+  ND: "North Dakota",
+  AK: "Alaska",
+  VT: "Vermont",
+  WY: "Wyoming"
+};
+
 // DOM elements
 let input, button, alertsDisplay, errorDiv;
 
@@ -15,12 +69,18 @@ function init() {
   }
 }
 
-// run immediately
 init();
 
 // CLICK HANDLER
 function handleClick() {
   const state = input.value.trim().toUpperCase();
+
+  // Validate input
+  if (state.length !== 2 || !/^[A-Z]+$/.test(state)) {
+    displayError("Please enter a valid US state abbreviation (e.g. NY, CA)");
+    return;
+  }
+
   fetchWeatherAlerts(state);
 }
 
@@ -35,7 +95,6 @@ function fetchWeatherAlerts(state) {
     })
     .then(data => {
       clearError();
-
       displayAlerts(data, state);
 
       // clear input
@@ -46,14 +105,15 @@ function fetchWeatherAlerts(state) {
     });
 }
 
-// DISPLAY ALERTS (FIXED FORMAT FOR CODEGRADE)
+// DISPLAY ALERTS
 function displayAlerts(data, state) {
   alertsDisplay.innerHTML = "";
 
   const alerts = data.features || [];
+  const fullState = stateNames[state] || state;
 
   const title = document.createElement("h2");
-  title.textContent = `Current watches, warnings, and advisories for ${state}: ${alerts.length}`;
+  title.textContent = `Current watches, warnings, and advisories for ${fullState}: ${alerts.length}`;
   alertsDisplay.appendChild(title);
 
   alerts.forEach(alert => {
@@ -75,7 +135,7 @@ function clearError() {
   errorDiv.classList.add("hidden");
 }
 
-// EXPORTS
+// EXPORTS (for tests)
 if (typeof module !== "undefined") {
   module.exports = {
     fetchWeatherAlerts,
